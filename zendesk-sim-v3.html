@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IT Access Management — Zendesk</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --green: #03363d;
+  --nav: #1c3a45;
+  --accent: #1f73b7;
+  --accent-light: #e9f2fb;
+  --bg: #f3f4f5;
+  --white: #ffffff;
+  --border: #d8dcde;
+  --text: #2f3941;
+  --muted: #68737d;
+  --success: #186a3b;
+  --warn: #ad5e00;
+  --warn-bg: #fff8ed;
+}
+body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); font-size:13px; min-height:100vh; display:flex; flex-direction:column; }
+.topbar { background:var(--green); height:44px; display:flex; align-items:center; padding:0 14px; gap:10px; flex-shrink:0; z-index:10; position:sticky; top:0; }
+.logo { font-weight:600; font-size:15px; color:#fff; letter-spacing:-0.2px; display:flex; align-items:center; gap:7px; white-space:nowrap; }
+.topbar-search { flex:1; max-width:400px; margin:0 auto; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.18); border-radius:4px; display:flex; align-items:center; padding:0 9px; gap:6px; height:27px; }
+.topbar-search input { background:none; border:none; outline:none; color:#fff; font-size:12px; font-family:'DM Sans',sans-serif; width:100%; }
+.topbar-search input::placeholder { color:rgba(255,255,255,0.45); }
+.topbar-right { margin-left:auto; display:flex; align-items:center; gap:10px; }
+.avatar-sm { width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:600; color:#fff; cursor:pointer; }
+.notif { width:18px; height:18px; border-radius:50%; background:#e35b66; display:flex; align-items:center; justify-content:center; font-size:10px; color:#fff; font-weight:700; cursor:pointer; }
+.body { display:flex; flex:1; align-items:flex-start; }
+.rail { width:50px; background:var(--nav); display:flex; flex-direction:column; align-items:center; padding:8px 0; gap:3px; flex-shrink:0; position:sticky; top:44px; height:calc(100vh - 44px); overflow:hidden; }
+.rail-btn { width:34px; height:34px; border-radius:6px; display:flex; align-items:center; justify-content:center; cursor:pointer; opacity:0.5; transition:opacity 0.15s,background 0.15s; color:#fff; }
+.rail-btn:hover { opacity:0.8; background:rgba(255,255,255,0.08); }
+.rail-btn.active { opacity:1; background:rgba(255,255,255,0.13); }
+.rail-sep { width:22px; height:1px; background:rgba(255,255,255,0.1); margin:4px 0; }
+.sidebar { width:210px; background:var(--white); border-right:1px solid var(--border); display:flex; flex-direction:column; flex-shrink:0; overflow-y:auto; position:sticky; top:44px; height:calc(100vh - 44px); }
+.sb-section { padding:14px 0 6px; }
+.sb-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.6px; color:var(--muted); padding:0 14px 6px; }
+.sb-item { display:flex; align-items:center; gap:7px; padding:6px 14px; cursor:pointer; color:var(--text); font-size:12.5px; transition:background 0.1s; position:relative; }
+.sb-item:hover { background:var(--bg); }
+.sb-item.active { background:var(--accent-light); color:var(--accent); font-weight:500; }
+.sb-item.active::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--accent); border-radius:0 2px 2px 0; }
+.sb-count { margin-left:auto; font-size:10.5px; background:var(--bg); color:var(--muted); padding:1px 5px; border-radius:9px; font-weight:500; }
+.sb-item.active .sb-count { background:var(--accent); color:#fff; }
+.tlist { width:300px; background:var(--white); border-right:1px solid var(--border); display:flex; flex-direction:column; flex-shrink:0; position:sticky; top:44px; height:calc(100vh - 44px); overflow:hidden; }
+.tlist-head { padding:13px 14px 10px; border-bottom:1px solid var(--border); flex-shrink:0; }
+.tlist-title { font-size:13.5px; font-weight:600; }
+.tlist-sub { font-size:11px; color:var(--muted); margin-top:1px; }
+.tlist-body { overflow-y:auto; flex:1; }
+.trow { padding:11px 14px; border-bottom:1px solid var(--border); cursor:pointer; transition:background 0.1s; display:flex; gap:9px; align-items:flex-start; }
+.trow:hover { background:var(--bg); }
+.trow.sel { background:var(--accent-light); border-left:3px solid var(--accent); padding-left:11px; }
+.trow-icon { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; color:#fff; flex-shrink:0; margin-top:1px; }
+.trow-body { flex:1; min-width:0; }
+.trow-subj { font-size:12px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.trow-sub { font-size:11px; color:var(--muted); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.trow-foot { display:flex; align-items:center; justify-content:space-between; margin-top:4px; }
+.badge { font-size:10px; font-weight:600; padding:1px 6px; border-radius:9px; text-transform:uppercase; letter-spacing:0.3px; }
+.b-new { background:#e5f5e5; color:#186a3b; }
+.b-open { background:var(--accent-light); color:var(--accent); }
+.b-pend { background:var(--warn-bg); color:var(--warn); }
+.b-solved { background:var(--bg); color:var(--muted); }
+.trow-time { font-size:10px; color:var(--muted); }
+.sla-chip { font-size:9.5px; font-weight:600; padding:1px 5px; border-radius:3px; }
+.sla-ok { background:#e5f5e5; color:#186a3b; }
+.sla-warn { background:#fff8ed; color:#ad5e00; }
+.sla-breach { background:#fff0f0; color:#8b1a1a; }
+.sla-solved { background:#f3f4f5; color:#68737d; }
+.main { flex:1; display:flex; flex-direction:column; background:var(--bg); min-width:0; }
+.main-top { background:var(--white); border-bottom:1px solid var(--border); padding:11px 18px; display:flex; align-items:center; gap:10px; position:sticky; top:44px; z-index:5; }
+.main-id { font-size:11px; color:var(--muted); font-family:'DM Mono',monospace; }
+.main-title { font-size:14.5px; font-weight:600; flex:1; }
+.status-chip { padding:3px 9px; border-radius:3px; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.4px; display:flex; align-items:center; gap:5px; cursor:pointer; position:relative; }
+.chip-new { background:#e5f5e5; color:#186a3b; }
+.chip-open { background:var(--accent-light); color:var(--accent); }
+.chip-pending { background:var(--warn-bg); color:var(--warn); }
+.chip-solved { background:var(--bg); color:var(--muted); border:1px solid var(--border); }
+.status-dot { width:6px; height:6px; border-radius:50%; }
+.status-menu { display:none; position:absolute; top:calc(100% + 4px); right:0; background:var(--white); border:1px solid var(--border); border-radius:6px; box-shadow:0 4px 16px rgba(0,0,0,0.1); z-index:20; min-width:140px; overflow:hidden; }
+.status-menu.open { display:block; }
+.smenu-item { padding:8px 12px; cursor:pointer; font-size:12px; display:flex; align-items:center; gap:7px; transition:background 0.1s; }
+.smenu-item:hover { background:var(--bg); }
+.content { display:flex; flex:1; min-width:0; align-items:flex-start; }
+.thread { flex:1; padding:16px 18px; display:flex; flex-direction:column; gap:12px; min-width:0; }
+.sla-banner { border-radius:6px; padding:10px 14px; display:flex; gap:10px; align-items:flex-start; font-size:12px; }
+.sla-banner.ok { background:#e5f5e5; border:1px solid #a3d9b1; color:#186a3b; }
+.sla-banner.warn { background:var(--warn-bg); border:1px solid #f5c87a; color:var(--warn); }
+.sla-banner.breach { background:#fff0f0; border:1px solid #f5a0a0; color:#8b1a1a; }
+.msg { background:var(--white); border:1px solid var(--border); border-radius:8px; overflow:hidden; min-width:0; word-break:break-word; }
+.msg.internal { border-left:3px solid #f0a500; background:#fffef7; }
+.msg.approval { border-left:3px solid #186a3b; background:#f4fbf6; }
+.msg-head { padding:10px 14px; border-bottom:1px solid var(--border); display:flex; align-items:flex-start; gap:9px; min-width:0; }
+.msg.internal .msg-head { background:#fffbea; }
+.msg.approval .msg-head { background:#eaf6ee; }
+.msg-av { width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#fff; flex-shrink:0; }
+.msg-from { font-weight:600; font-size:12.5px; overflow-wrap:break-word; word-break:break-word; }
+.msg-when { font-size:10.5px; color:var(--muted); margin-top:2px; }
+.int-badge { font-size:10px; font-weight:600; text-transform:uppercase; background:#fff3cd; color:#7a5000; padding:1px 6px; border-radius:3px; letter-spacing:0.3px; margin-left:5px; }
+.appr-badge { font-size:10px; font-weight:600; text-transform:uppercase; background:#d4edda; color:#186a3b; padding:1px 6px; border-radius:3px; letter-spacing:0.3px; margin-left:5px; }
+.msg-body { padding:14px; font-size:13px; line-height:1.65; overflow-wrap:break-word; word-break:break-word; min-width:0; }
+.msg-body p { margin-bottom:9px; }
+.msg-body p:last-child { margin-bottom:0; }
+.ftable { width:100%; border-collapse:collapse; font-size:12px; margin:10px 0; font-family:'DM Mono',monospace; border:1px solid var(--border); border-radius:6px; overflow:hidden; table-layout:fixed; }
+.ftable tr { border-bottom:1px solid var(--border); }
+.ftable tr:last-child { border-bottom:none; }
+.ftable td { padding:6px 10px; vertical-align:top; overflow-wrap:break-word; word-break:break-word; }
+.ftable td:first-child { color:var(--muted); width:160px; min-width:160px; max-width:160px; background:var(--bg); font-weight:500; }
+.ftable td:last-child { font-weight:500; }
+.hl { color:var(--accent); }
+.appr-row { display:flex; align-items:center; gap:8px; margin-top:8px; padding:8px 10px; background:#eaf6ee; border-radius:5px; border:1px solid #a3d9b1; }
+.appr-check { width:16px; height:16px; border-radius:50%; background:#186a3b; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.rpanel { width:250px; background:var(--white); border-left:1px solid var(--border); flex-shrink:0; position:sticky; top:44px; height:calc(100vh - 44px); overflow-y:auto; }
+.rp-section { padding:14px; border-bottom:1px solid var(--border); }
+.rp-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.6px; color:var(--muted); margin-bottom:9px; }
+.rp-row { margin-bottom:8px; }
+.rp-row:last-child { margin-bottom:0; }
+.rp-key { font-size:11px; color:var(--muted); }
+.rp-val { font-size:12px; font-weight:500; }
+.rp-val.mono { font-family:'DM Mono',monospace; font-size:11px; }
+.tag-wrap { display:flex; flex-wrap:wrap; gap:4px; }
+.tag { font-size:10px; font-weight:500; background:var(--bg); color:var(--muted); border:1px solid var(--border); padding:1px 6px; border-radius:3px; }
+.assignee-row { display:flex; align-items:center; gap:7px; }
+.sla-bar { height:4px; background:var(--border); border-radius:2px; margin-top:4px; overflow:hidden; }
+.sla-fill { height:100%; border-radius:2px; }
+.reply-wrap { background:var(--white); border-top:1px solid var(--border); padding:10px 18px 12px; }
+.reply-tabs { display:flex; gap:0; border-bottom:1px solid var(--border); margin-bottom:8px; }
+.rtab { padding:5px 13px; font-size:12px; font-weight:500; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; transition:color 0.12s; }
+.rtab.active { color:var(--accent); border-bottom-color:var(--accent); }
+.rtab:hover:not(.active) { color:var(--text); }
+.reply-box { width:100%; border:1px solid var(--border); border-radius:6px; padding:9px 11px; min-height:72px; max-height:180px; font-size:13px; font-family:'DM Sans',sans-serif; color:var(--text); resize:vertical; outline:none; line-height:1.55; transition:border-color 0.15s; }
+.reply-box:focus { border-color:var(--accent); }
+.reply-box.internal-mode { background:#fffef7; border-color:#f0c040; }
+.reply-foot { display:flex; align-items:center; justify-content:space-between; margin-top:8px; }
+.icon-btn { background:none; border:none; cursor:pointer; color:var(--muted); padding:4px; border-radius:4px; display:flex; align-items:center; transition:background 0.12s,color 0.12s; }
+.icon-btn:hover { background:var(--bg); color:var(--text); }
+.submit-wrap { display:flex; }
+.btn-submit { background:var(--accent); color:#fff; border:none; border-radius:4px 0 0 4px; padding:6px 14px; font-size:12px; font-weight:500; font-family:'DM Sans',sans-serif; cursor:pointer; transition:background 0.12s; }
+.btn-submit:hover { background:#1762a0; }
+.btn-submit.internal-submit { background:#c8860a; }
+.btn-submit.internal-submit:hover { background:#a36f08; }
+.btn-caret { background:#1762a0; color:#fff; border:none; border-radius:0 4px 4px 0; padding:6px 7px; cursor:pointer; border-left:1px solid rgba(255,255,255,0.2); }
+.btn-caret.internal-caret { background:#a36f08; }
+::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar-thumb { background:#c4cdd4; border-radius:3px; }
+::-webkit-scrollbar-track { background:transparent; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">
+    <svg width="18" height="18" viewBox="0 0 32 32" fill="white"><path d="M16 3C8.82 3 3 8.82 3 16s5.82 13 13 13 13-5.82 13-13S23.18 3 16 3zm-2 18h-3V13h3v8zm5 0h-3v-5.5c0-.83-.67-1.5-1.5-1.5S13 14.67 13 15.5V21h-3V13h3v1.26C13.7 13.48 14.8 13 16 13c2.76 0 3 2.24 3 5v3z"/></svg>
+    Zendesk
+  </div>
+  <div class="topbar-search">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" placeholder="Search tickets, users…">
+  </div>
+  <div class="topbar-right">
+    <div class="notif">6</div>
+    <div class="avatar-sm" style="background:#4b9ebf;">EM</div>
+  </div>
+</div>
+
+<div class="body">
+<div class="rail">
+  <div class="rail-btn active"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
+  <div class="rail-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div>
+  <div class="rail-sep"></div>
+  <div class="rail-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+  <div class="rail-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
+</div>
+
+<div class="sidebar">
+  <div class="sb-section">
+    <div class="sb-label">Views</div>
+    <div class="sb-item" onclick="filterTickets('all')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>All tickets<span class="sb-count">6</span></div>
+    <div class="sb-item active" id="sb-new" onclick="filterTickets('new')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>New<span class="sb-count">4</span></div>
+    <div class="sb-item" onclick="filterTickets('open')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 14.66V20a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2h5.34"/><polygon points="18 2 22 6 12 16 8 16 8 12 18 2"/></svg>Open<span class="sb-count">2</span></div>
+    <div class="sb-item" onclick="filterTickets('pending')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Pending<span class="sb-count">0</span></div>
+    <div class="sb-item" onclick="filterTickets('solved')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Solved<span class="sb-count">0</span></div>
+  </div>
+  <div class="sb-section">
+    <div class="sb-label">IT — JML Queue</div>
+    <div class="sb-item" onclick="filterTickets('joiner')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>Joiners<span class="sb-count">2</span></div>
+    <div class="sb-item" onclick="filterTickets('mover')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.828 2.828 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>Movers<span class="sb-count">2</span></div>
+    <div class="sb-item" onclick="filterTickets('leaver')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="18" y1="8" x2="23" y2="13"/><line x1="23" y1="8" x2="18" y2="13"/></svg>Leavers<span class="sb-count">2</span></div>
+  </div>
+</div>
+
+<div class="tlist">
+  <div class="tlist-head">
+    <div class="tlist-title" id="listTitle">New tickets</div>
+    <div class="tlist-sub" id="listSub">4 tickets · by date</div>
+  </div>
+  <div class="tlist-body" id="ticketList"></div>
+</div>
+
+<div class="main">
+  <div class="main-top">
+    <div style="flex:1">
+      <div class="main-id" id="mainId">#ITS-30101</div>
+      <div class="main-title" id="mainTitle">New employee onboarding — Jordan Mills</div>
+    </div>
+    <div style="position:relative">
+      <div class="status-chip chip-new" id="statusChip" onclick="toggleStatusMenu()">
+        <span class="status-dot" style="background:#186a3b;" id="statusDot"></span>
+        <span id="statusLabel">New</span>
+      </div>
+      <div class="status-menu" id="statusMenu">
+        <div class="smenu-item" onclick="setStatus('new')"><span style="width:8px;height:8px;border-radius:50%;background:#186a3b;display:inline-block"></span>New</div>
+        <div class="smenu-item" onclick="setStatus('open')"><span style="width:8px;height:8px;border-radius:50%;background:#1f73b7;display:inline-block"></span>Open</div>
+        <div class="smenu-item" onclick="setStatus('pending')"><span style="width:8px;height:8px;border-radius:50%;background:#ad5e00;display:inline-block"></span>Pending</div>
+        <div class="smenu-item" onclick="setStatus('solved')"><span style="width:8px;height:8px;border-radius:50%;background:#68737d;display:inline-block"></span>Solved</div>
+      </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="thread" id="thread"></div>
+    <div class="rpanel">
+      <div class="rp-section">
+        <div class="rp-label">Ticket</div>
+        <div class="rp-row"><div class="rp-key">ID</div><div class="rp-val mono" id="rp-id">#ITS-30101</div></div>
+        <div class="rp-row"><div class="rp-key">Type</div><div class="rp-val"><span class="badge b-new" id="rp-type">Joiner</span></div></div>
+        <div class="rp-row"><div class="rp-key">Priority</div><div class="rp-val" id="rp-priority">High</div></div>
+        <div class="rp-row"><div class="rp-key">Created</div><div class="rp-val" id="rp-created">Mar 18, 2026 08:00</div></div>
+        <div class="rp-row">
+          <div class="rp-key">SLA remaining</div>
+          <div class="rp-val" id="rp-sla" style="color:var(--success)">—</div>
+          <div class="sla-bar"><div class="sla-fill" id="rp-slabar" style="width:10%;background:#186a3b"></div></div>
+        </div>
+        <div class="rp-row">
+          <div class="rp-key">Manager approval</div>
+          <div class="rp-val" id="rp-approval" style="color:#186a3b;font-size:11px;">—</div>
+        </div>
+      </div>
+      <div class="rp-section">
+        <div class="rp-label">Requester</div>
+        <div class="rp-row"><div class="rp-key">Name</div><div class="rp-val" id="rp-req">—</div></div>
+        <div class="rp-row"><div class="rp-key">Role</div><div class="rp-val" id="rp-reqrole">—</div></div>
+      </div>
+      <div class="rp-section">
+        <div class="rp-label">Assignee</div>
+        <div class="assignee-row">
+          <div class="avatar-sm" style="background:#4b9ebf;width:26px;height:26px;font-size:10px;">EM</div>
+          <div><div class="rp-val">Evan M.</div><div class="rp-key">IT / IAM</div></div>
+        </div>
+      </div>
+      <div class="rp-section" id="rp-extra"></div>
+      <div class="rp-section">
+        <div class="rp-label">Tags</div>
+        <div class="tag-wrap" id="rp-tags"></div>
+      </div>
+    </div>
+  </div>
+  <div class="reply-wrap">
+    <div class="reply-tabs">
+      <div class="rtab active" id="tab-reply" onclick="switchTab('reply')">Reply</div>
+      <div class="rtab" id="tab-note" onclick="switchTab('note')">Internal note</div>
+    </div>
+    <textarea class="reply-box" id="replyBox" placeholder="Reply to requester…" rows="3"></textarea>
+    <div class="reply-foot">
+      <div class="reply-tools">
+        <button class="icon-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg></button>
+      </div>
+      <div class="submit-wrap" style="position:relative">
+        <button class="btn-submit" id="submitBtn" onclick="submitMessage()">Submit as Open</button>
+        <button class="btn-caret" id="caretBtn" onclick="toggleSubmitMenu(event)"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="status-menu" id="submitMenu" style="bottom:calc(100% + 4px);top:auto;right:0;">
+          <div class="smenu-item" onclick="submitAs('open')"><span style="width:8px;height:8px;border-radius:50%;background:#1f73b7;display:inline-block"></span>Submit as Open</div>
+          <div class="smenu-item" onclick="submitAs('pending')"><span style="width:8px;height:8px;border-radius:50%;background:#ad5e00;display:inline-block"></span>Submit as Pending</div>
+          <div class="smenu-item" onclick="submitAs('solved')"><span style="width:8px;height:8px;border-radius:50%;background:#68737d;display:inline-block"></span>Submit as Solved</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+function slaStatus(deadlineISO, status) {
+  if (status === 'solved') return { label:'Resolved', pct:100, cls:'sla-solved' };
+  const dl = typeof deadlineISO === 'number' ? deadlineISO : new Date(deadlineISO).getTime();
+  const remainMs = dl - Date.now();
+  if (remainMs <= 0) return { label:'Breached', pct:100, cls:'sla-breach' };
+  const hours = Math.floor(remainMs / 3600000);
+  const mins  = Math.floor((remainMs % 3600000) / 60000);
+  const label = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+  const pct   = Math.min(92, Math.max(5, Math.round((1 - remainMs / (8 * 3600000)) * 100)));
+  const cls   = remainMs < 3600000 ? 'sla-breach' : remainMs < 7200000 ? 'sla-warn' : 'sla-ok';
+  return { label, pct, cls };
+}
+
+const H = 3600000;
+const NOW = Date.now();
+function dl(h) { return NOW + h * H; }
+
+const TICKETS = [
+  {
+    id:'ITS-30101', type:'joiner', status:'new', priority:'High',
+    subject:'New employee onboarding — Jordan Mills',
+    subline:'Joiner · V2_Cloud_Engineer',
+    initials:'JM', color:'#186a3b',
+    created:'Mar 18, 2026  08:00 AM',
+    slaDeadline:dl(6),
+    approvalRef:'APPR-2026-4001', approvedBy:'Evan M. (IT / IAM Manager)', approvedAt:'Mar 18, 2026  8:01 AM',
+    requester:'Diana Holloway', reqRole:'HR Systems Coordinator',
+    tags:['joiner','v2-cloud-engineer','ad-provision','yearwood.local','m365-e3'],
+    extra:{ label:'New user', rows:[
+      ['Full name','Jordan Mills'],['Employee ID','EMP-2026-0501'],
+      ['Department','Cloud Engineering'],['Start date','Mar 23, 2026'],
+      ['SAM account','j.mills'],
+      ['UPN','j.mills@yearwood.local'],
+      ['AD OU','OU=CloudEng,OU=Users,DC=yearwood,DC=local'],
+      ['AD group','GRP_CloudEng_Users'],
+      ['Okta group','V2_Cloud_Engineer'],
+      ['SAML apps','Slack, Google Workspace, SharePoint'],
+      ['Approval ref','APPR-2026-4001']
+    ]},
+    messages:[
+      { type:'email', from:'Diana Holloway', fromSub:'HR Systems (via Workday)', initials:'HR', color:'#3d6b9a', time:'Mar 18, 2026  8:00 AM · via email integration',
+        html:`<p>Hi IT team,</p>
+<p>We have a new hire starting <strong>Monday, March 23, 2026</strong>. Please provision full IT access per the Cloud Engineering onboarding checklist.</p>
+<table class="ftable">
+<tr><td>Full name</td><td class="hl">Jordan Mills</td></tr>
+<tr><td>Title</td><td>Cloud Engineer I</td></tr>
+<tr><td>Department</td><td>Cloud Engineering</td></tr>
+<tr><td>Manager</td><td>Evan M. (IT / IAM)</td></tr>
+<tr><td>Employee ID</td><td>EMP-2026-0501</td></tr>
+<tr><td>Personal email</td><td>j.mills.2026@personal.com</td></tr>
+</table>
+<p><strong>Access required:</strong></p>
+<table class="ftable">
+<tr><td>AD OU</td><td>OU=CloudEng,OU=Users,DC=yearwood,DC=local</td></tr>
+<tr><td>AD group</td><td>GRP_CloudEng_Users</td></tr>
+<tr><td>Okta group</td><td>V2_Cloud_Engineer</td></tr>
+<tr><td>UPN</td><td>j.mills@yearwood.local</td></tr>
+<tr><td>Apps (via group)</td><td>Slack, Google Workspace, SharePoint</td></tr>
+<tr><td>License</td><td>Microsoft 365 E3</td></tr>
+<tr><td>MFA</td><td>Required on first login</td></tr>
+</table>
+<p>Approval ref: <code style="font-family:'DM Mono',monospace;color:var(--accent)">APPR-2026-4001</code></p>` },
+      { type:'internal', from:'IT Automation Bot', fromSub:'', initials:'SYS', color:'#5b8db8', time:'Mar 18, 2026  8:01 AM · auto-triaged',
+        html:`<p>Ticket auto-classified as <strong>JOINER</strong>. Required fields validated: ✔ Employee ID &nbsp;✔ Start date &nbsp;✔ AD OU &nbsp;✔ Okta group &nbsp;✔ Approval ref.</p><p>Domain: <strong>yearwood.local</strong> · Target Okta group: <strong>V2_Cloud_Engineer</strong> · SLA deadline: <strong>Mar 18 4:00 PM</strong>.</p>` },
+      { type:'approval', from:'IT Automation Bot', fromSub:'', initials:'APR', color:'#186a3b', time:'Mar 18, 2026  8:01 AM · manager approval confirmed',
+        html:`<p>Manager approval verified against HR system.</p>
+<table class="ftable">
+<tr><td>Approval ref</td><td>APPR-2026-4001</td></tr>
+<tr><td>Approved by</td><td>Evan M. — IT / IAM Manager</td></tr>
+<tr><td>Approval date</td><td>Mar 17, 2026  4:45 PM</td></tr>
+<tr><td>Approval method</td><td>Workday org chart sign-off</td></tr>
+<tr><td>Status</td><td>✔ Confirmed — provisioning authorised</td></tr>
+</table>` }
+    ]
+  },
+  {
+    id:'ITS-30102', type:'joiner', status:'new', priority:'High',
+    subject:'New employee onboarding — Priya Nair',
+    subline:'Joiner · V2_HR',
+    initials:'PN', color:'#2e7d6b',
+    created:'Mar 18, 2026  09:15 AM',
+    slaDeadline:dl(4.5),
+    approvalRef:'APPR-2026-4002', approvedBy:'Diana Holloway (HR Director)', approvedAt:'Mar 18, 2026  9:16 AM',
+    requester:'Diana Holloway', reqRole:'HR Systems Coordinator',
+    tags:['joiner','v2-hr','ad-provision','yearwood.local','m365-e3'],
+    extra:{ label:'New user', rows:[
+      ['Full name','Priya Nair'],['Employee ID','EMP-2026-0502'],
+      ['Department','Human Resources'],['Start date','Mar 24, 2026'],
+      ['SAM account','p.nair'],
+      ['UPN','p.nair@yearwood.local'],
+      ['AD OU','OU=HR,OU=Users,DC=yearwood,DC=local'],
+      ['AD group','GRP_HR_Users'],
+      ['Okta group','V2_HR'],
+      ['SAML apps','Slack, Google Workspace, SharePoint'],
+      ['Approval ref','APPR-2026-4002']
+    ]},
+    messages:[
+      { type:'email', from:'Diana Holloway', fromSub:'HR Systems (via Workday)', initials:'HR', color:'#3d6b9a', time:'Mar 18, 2026  9:15 AM · via email integration',
+        html:`<p>Hi IT,</p><p>New HR hire starting <strong>March 24, 2026</strong>. Please provision standard HR department access.</p>
+<table class="ftable">
+<tr><td>Full name</td><td class="hl">Priya Nair</td></tr>
+<tr><td>Title</td><td>HR Coordinator</td></tr>
+<tr><td>Department</td><td>Human Resources</td></tr>
+<tr><td>Employee ID</td><td>EMP-2026-0502</td></tr>
+</table>
+<table class="ftable">
+<tr><td>AD OU</td><td>OU=HR,OU=Users,DC=yearwood,DC=local</td></tr>
+<tr><td>AD group</td><td>GRP_HR_Users</td></tr>
+<tr><td>Okta group</td><td>V2_HR</td></tr>
+<tr><td>UPN</td><td>p.nair@yearwood.local</td></tr>
+<tr><td>Apps (via group)</td><td>Slack, Google Workspace, SharePoint</td></tr>
+<tr><td>License</td><td>Microsoft 365 E3</td></tr>
+</table>
+<p>Approval ref: <code style="font-family:'DM Mono',monospace;color:var(--accent)">APPR-2026-4002</code></p>` },
+      { type:'internal', from:'IT Automation Bot', fromSub:'', initials:'SYS', color:'#5b8db8', time:'Mar 18, 2026  9:16 AM · auto-triaged',
+        html:`<p>Ticket auto-classified as <strong>JOINER</strong>. Fields validated: ✔ Employee ID &nbsp;✔ Start date &nbsp;✔ AD OU &nbsp;✔ Okta group &nbsp;✔ Approval ref.</p><p>Domain: <strong>yearwood.local</strong> · Target Okta group: <strong>V2_HR</strong> · SLA deadline: <strong>Mar 18 5:15 PM</strong>.</p>` },
+      { type:'approval', from:'IT Automation Bot', fromSub:'', initials:'APR', color:'#186a3b', time:'Mar 18, 2026  9:16 AM · manager approval confirmed',
+        html:`<p>Manager approval verified against HR system.</p>
+<table class="ftable">
+<tr><td>Approval ref</td><td>APPR-2026-4002</td></tr>
+<tr><td>Approved by</td><td>Diana Holloway — HR Director</td></tr>
+<tr><td>Approval date</td><td>Mar 18, 2026  8:30 AM</td></tr>
+<tr><td>Approval method</td><td>Workday org chart sign-off</td></tr>
+<tr><td>Status</td><td>✔ Confirmed — provisioning authorised</td></tr>
+</table>` }
+    ]
+  },
+  {
+    id:'ITS-30103', type:'mover', status:'open', priority:'Medium',
+    subject:'Role change — Emily Clark, Helpdesk → Cloud Engineer',
+    subline:'Mover · V2_Helpdesk → V2_Cloud_Engineer',
+    initials:'EC', color:'#6a4fb5',
+    created:'Mar 18, 2026  07:30 AM',
+    slaDeadline:dl(1.75),
+    approvalRef:'APPR-2026-4003', approvedBy:'Evan M. (IT / IAM Manager)', approvedAt:'Mar 18, 2026  7:31 AM',
+    requester:'Sarah Nguyen', reqRole:'People Ops Lead',
+    tags:['mover','v2-cloud-engineer','v2-helpdesk','rbac-change','yearwood.local'],
+    extra:{ label:'Mover details', rows:[
+      ['SAM account','Emily.Clark'],
+      ['UPN','Emily.Clark@yearwood.local'],
+      ['From Okta group','V2_Helpdesk'],
+      ['To Okta group','V2_Cloud_Engineer'],
+      ['From AD group','GRP_Helpdesk_Users'],
+      ['To AD group','GRP_CloudEng_Users'],
+      ['New title','Cloud Engineer I'],
+      ['Effective','Mar 18, 2026'],
+      ['Approval ref','APPR-2026-4003']
+    ]},
+    messages:[
+      { type:'email', from:'Sarah Nguyen', fromSub:'People Ops', initials:'SN', color:'#6a4fb5', time:'Mar 18, 2026  7:30 AM',
+        html:`<p>Hi IT,</p><p>Emily Clark is transferring from Helpdesk to Cloud Engineering effective today <strong>March 18, 2026</strong>. Please update group memberships in AD and Okta.</p>
+<table class="ftable">
+<tr><td>SAM account</td><td class="hl">Emily.Clark</td></tr>
+<tr><td>UPN</td><td>Emily.Clark@yearwood.local</td></tr>
+<tr><td>Remove AD group</td><td>GRP_Helpdesk_Users</td></tr>
+<tr><td>Remove Okta group</td><td>V2_Helpdesk</td></tr>
+<tr><td>Add AD group</td><td>GRP_CloudEng_Users</td></tr>
+<tr><td>Add Okta group</td><td>V2_Cloud_Engineer</td></tr>
+<tr><td>Update AD title</td><td>Cloud Engineer I</td></tr>
+<tr><td>Update AD dept</td><td>Cloud Engineering</td></tr>
+<tr><td>App access lost</td><td>None (SharePoint + Slack retained)</td></tr>
+<tr><td>App access gained</td><td>Google Workspace (not in V2_Helpdesk)</td></tr>
+</table>
+<p>Manager approval ref: <code style="font-family:'DM Mono',monospace;color:var(--accent)">APPR-2026-4003</code></p>` },
+      { type:'internal', from:'IT Automation Bot', fromSub:'', initials:'SYS', color:'#5b8db8', time:'Mar 18, 2026  7:31 AM · auto-triaged',
+        html:`<p>Ticket auto-classified as <strong>MOVER</strong>. Group delta detected: <strong>V2_Helpdesk → V2_Cloud_Engineer</strong>. AD attribute update also required (title, department).</p><p>Domain: <strong>yearwood.local</strong> · SLA deadline: <strong>Mar 18 3:30 PM</strong>.</p>` },
+      { type:'approval', from:'IT Automation Bot', fromSub:'', initials:'APR', color:'#186a3b', time:'Mar 18, 2026  7:31 AM · manager approval confirmed',
+        html:`<p>Manager approval verified for role change.</p>
+<table class="ftable">
+<tr><td>Approval ref</td><td>APPR-2026-4003</td></tr>
+<tr><td>Approved by</td><td>Evan M. — IT / IAM Manager</td></tr>
+<tr><td>Approval date</td><td>Mar 17, 2026  5:00 PM</td></tr>
+<tr><td>Approval method</td><td>People Ops change request sign-off</td></tr>
+<tr><td>Status</td><td>✔ Confirmed — RBAC change authorised</td></tr>
+</table>` },
+      { type:'internal', from:'Evan M.', fromSub:'', initials:'EM', color:'#4b9ebf', time:'Mar 18, 2026  8:45 AM',
+        html:`<p>Confirmed in Workday. Mover script queued after Joiner tickets are cleared. Okta group reassignment will revoke Helpdesk app set and grant Cloud Engineer apps via group policy.</p>` }
+    ]
+  },
+  {
+    id:'ITS-30104', type:'mover', status:'new', priority:'Medium',
+    subject:'Dept transfer — David Lee, Finance → Helpdesk',
+    subline:'Mover · V2_Finance → V2_Helpdesk',
+    initials:'DL', color:'#c0622a',
+    created:'Mar 18, 2026  10:00 AM',
+    slaDeadline:dl(8),
+    approvalRef:'APPR-2026-4004', approvedBy:'James Tran (Operations Manager)', approvedAt:'Mar 18, 2026  10:01 AM',
+    requester:'James Tran', reqRole:'Operations Manager',
+    tags:['mover','v2-helpdesk','v2-finance','dept-transfer','yearwood.local'],
+    extra:{ label:'Transfer details', rows:[
+      ['SAM account','David.Lee'],
+      ['UPN','David.Lee@yearwood.local'],
+      ['From Okta group','V2_Finance'],
+      ['To Okta group','V2_Helpdesk'],
+      ['Effective','Mar 20, 2026'],
+      ['Approval ref','APPR-2026-4004']
+    ]},
+    messages:[
+      { type:'email', from:'James Tran', fromSub:'Operations Manager', initials:'JT', color:'#c0622a', time:'Mar 18, 2026  10:00 AM',
+        html:`<p>David Lee is moving from Finance to the Helpdesk team effective <strong>March 20, 2026</strong>. Please update access on that date.</p>
+<table class="ftable">
+<tr><td>SAM account</td><td>David.Lee</td></tr>
+<tr><td>UPN</td><td>David.Lee@yearwood.local</td></tr>
+<tr><td>Remove</td><td>GRP_Finance_Users, V2_Finance (Okta)</td></tr>
+<tr><td>Add</td><td>GRP_Helpdesk_Users, V2_Helpdesk (Okta)</td></tr>
+<tr><td>App access delta</td><td>No change — both groups: SharePoint + Slack only</td></tr>
+<tr><td>Effective date</td><td>March 20, 2026</td></tr>
+</table>
+<p>Approval ref: <code style="font-family:'DM Mono',monospace;color:var(--accent)">APPR-2026-4004</code></p>` },
+      { type:'internal', from:'IT Automation Bot', fromSub:'', initials:'SYS', color:'#5b8db8', time:'Mar 18, 2026  10:01 AM · auto-triaged',
+        html:`<p>Ticket auto-classified as <strong>MOVER</strong>. Group delta: <strong>V2_Finance → V2_Helpdesk</strong>. Effective date March 20 — schedule accordingly.</p><p>Domain: <strong>yearwood.local</strong> · SLA deadline: <strong>Mar 18 6:00 PM</strong>.</p>` },
+      { type:'approval', from:'IT Automation Bot', fromSub:'', initials:'APR', color:'#186a3b', time:'Mar 18, 2026  10:01 AM · manager approval confirmed',
+        html:`<p>Manager approval verified for department transfer.</p>
+<table class="ftable">
+<tr><td>Approval ref</td><td>APPR-2026-4004</td></tr>
+<tr><td>Approved by</td><td>James Tran — Operations Manager</td></tr>
+<tr><td>Approval date</td><td>Mar 18, 2026  9:45 AM</td></tr>
+<tr><td>Approval method</td><td>Direct manager sign-off via email</td></tr>
+<tr><td>Status</td><td>✔ Confirmed — transfer authorised for Mar 20</td></tr>
+</table>` }
+    ]
+  },
+  {
+    id:'ITS-30105', type:'leaver', status:'new', priority:'Critical',
+    subject:'Immediate offboarding — James King (termination)',
+    subline:'Leaver · V2_Finance — URGENT',
+    initials:'JK', color:'#b52c3a',
+    created:'Mar 18, 2026  06:45 AM',
+    slaDeadline:dl(0.75),
+    approvalRef:'APPR-2026-4005', approvedBy:'Jennifer Hall (HR Director) + Legal', approvedAt:'Mar 18, 2026  6:46 AM',
+    requester:'Jennifer Hall', reqRole:'HR Director',
+    tags:['leaver','termination','critical','immediate','v2-finance','yearwood.local'],
+    extra:{ label:'Leaver details', rows:[
+      ['SAM account','James.King'],
+      ['UPN','James.King@yearwood.local'],
+      ['Current Okta group','V2_Finance'],
+      ['Last day','Mar 18, 2026 — immediate'],
+      ['Reason','Termination'],
+      ['Authorization','HR Director + Legal'],
+      ['Mailbox retention','90 days — legal hold'],
+      ['Approval ref','APPR-2026-4005']
+    ]},
+    messages:[
+      { type:'email', from:'Jennifer Hall', fromSub:'HR Director', initials:'JH', color:'#b52c3a', time:'Mar 18, 2026  6:45 AM · URGENT',
+        html:`<p>IT Team,</p>
+<p><strong>Immediate action required.</strong> James King's employment has been terminated effective this morning. All system access must be revoked immediately.</p>
+<table class="ftable">
+<tr><td>SAM account</td><td class="hl">James.King</td></tr>
+<tr><td>UPN</td><td>James.King@yearwood.local</td></tr>
+<tr><td>Current Okta group</td><td>V2_Finance</td></tr>
+<tr><td>SAML apps to revoke</td><td>SharePoint, Slack</td></tr>
+<tr><td>Action required</td><td>Disable AD · revoke all Okta sessions · remove all group memberships</td></tr>
+<tr><td>Mailbox retention</td><td>90 days per legal hold policy</td></tr>
+<tr><td>Equipment</td><td>Laptop recovery in progress via manager</td></tr>
+</table>
+<p>Legal has been notified. Provide confirmation and CSV proof artifact when complete.</p>
+<p>Authorization ref: <code style="font-family:'DM Mono',monospace;color:var(--accent)">APPR-2026-4005</code></p>` },
+      { type:'internal', from:'IT Automation Bot', fromSub:'', initials:'SYS', color:'#5b8db8', time:'Mar 18, 2026  6:46 AM · auto-triaged',
+        html:`<p>Classified as <strong>LEAVER — CRITICAL</strong>. SLA: <strong>2 hours (8:45 AM deadline)</strong>. Account: <strong>James.King</strong> · Domain: <strong>yearwood.local</strong> · Group: <strong>V2_Finance</strong>.</p>` },
+      { type:'approval', from:'IT Automation Bot', fromSub:'', initials:'APR', color:'#186a3b', time:'Mar 18, 2026  6:46 AM · dual authorization confirmed',
+        html:`<p>Dual authorization verified — HR Director and Legal sign-off confirmed.</p>
+<table class="ftable">
+<tr><td>Authorization ref</td><td>APPR-2026-4005</td></tr>
+<tr><td>Authorised by</td><td>Jennifer Hall — HR Director</td></tr>
+<tr><td>Co-authorised by</td><td>Legal Department (termination filing)</td></tr>
+<tr><td>Authorization date</td><td>Mar 18, 2026  6:30 AM</td></tr>
+<tr><td>Type</td><td>Involuntary termination — immediate access revocation</td></tr>
+<tr><td>Status</td><td>✔ Confirmed — revocation authorised immediately</td></tr>
+</table>` }
+    ]
+  },
+  {
+    id:'ITS-30106', type:'leaver', status:'open', priority:'High',
+    subject:'Planned offboarding — Mike Brown (resignation)',
+    subline:'Leaver · V2_Cloud_Engineer',
+    initials:'MB', color:'#8a4000',
+    created:'Mar 18, 2026  08:30 AM',
+    slaDeadline:dl(2.75),
+    approvalRef:'APPR-2026-4006', approvedBy:'R. Chen (Engineering Manager)', approvedAt:'Mar 18, 2026  8:31 AM',
+    requester:'R. Chen', reqRole:'Engineering Manager',
+    tags:['leaver','resignation','v2-cloud-engineer','planned','yearwood.local'],
+    extra:{ label:'Leaver details', rows:[
+      ['SAM account','Mike.Brown'],
+      ['UPN','Mike.Brown@yearwood.local'],
+      ['Current Okta group','V2_Cloud_Engineer'],
+      ['Last day','Mar 20, 2026'],
+      ['Revoke at','Mar 20 5:00 PM ET'],
+      ['Reason','Resignation — 2 weeks notice'],
+      ['Mailbox retention','60 days'],
+      ['Approval ref','APPR-2026-4006']
+    ]},
+    messages:[
+      { type:'email', from:'R. Chen', fromSub:'Engineering Manager', initials:'RC', color:'#8a4000', time:'Mar 18, 2026  8:30 AM',
+        html:`<p>Mike Brown has submitted resignation. Last day is <strong>March 20, 2026</strong>. Please schedule access revocation for end of business that day.</p>
+<table class="ftable">
+<tr><td>SAM account</td><td>Mike.Brown</td></tr>
+<tr><td>UPN</td><td>Mike.Brown@yearwood.local</td></tr>
+<tr><td>Okta group</td><td>V2_Cloud_Engineer</td></tr>
+<tr><td>SAML apps to revoke</td><td>Slack, Google Workspace, SharePoint</td></tr>
+<tr><td>Revoke date</td><td>March 20, 2026 — 5:00 PM ET</td></tr>
+<tr><td>Mailbox retention</td><td>60 days</td></tr>
+<tr><td>GitHub access</td><td>Remove from org on last day</td></tr>
+</table>
+<p>Authorization ref: <code style="font-family:'DM Mono',monospace;color:var(--accent)">APPR-2026-4006</code></p>` },
+      { type:'internal', from:'IT Automation Bot', fromSub:'', initials:'SYS', color:'#5b8db8', time:'Mar 18, 2026  8:31 AM · auto-triaged',
+        html:`<p>Classified as <strong>LEAVER — PLANNED</strong>. Revocation scheduled for <strong>March 20 5:00 PM ET</strong>. Account: <strong>Mike.Brown</strong> · Domain: <strong>yearwood.local</strong> · Group: <strong>V2_Cloud_Engineer</strong>.</p>` },
+      { type:'approval', from:'IT Automation Bot', fromSub:'', initials:'APR', color:'#186a3b', time:'Mar 18, 2026  8:31 AM · manager approval confirmed',
+        html:`<p>Manager approval verified for planned offboarding.</p>
+<table class="ftable">
+<tr><td>Authorization ref</td><td>APPR-2026-4006</td></tr>
+<tr><td>Authorised by</td><td>R. Chen — Engineering Manager</td></tr>
+<tr><td>Authorization date</td><td>Mar 18, 2026  8:15 AM</td></tr>
+<tr><td>Type</td><td>Voluntary resignation — scheduled revocation</td></tr>
+<tr><td>Status</td><td>✔ Confirmed — revocation scheduled Mar 20 5:00 PM ET</td></tr>
+</table>` },
+      { type:'internal', from:'Evan M.', fromSub:'', initials:'EM', color:'#4b9ebf', time:'Mar 18, 2026  9:00 AM',
+        html:`<p>Acknowledged. Leaver script scheduled for EOD March 20. CSV proof artifact will be attached and ticket closed at that time.</p>` }
+    ]
+  }
+];
+
+let currentTicketId = 'ITS-30101';
+let currentTab = 'reply';
+let currentFilter = 'new';
+const liveMessages = {};
+TICKETS.forEach(t => { liveMessages[t.id] = t.messages.map(m => ({...m})); });
+const liveStatus = {};
+TICKETS.forEach(t => { liveStatus[t.id] = t.status; });
+
+function filterTickets(f) {
+  currentFilter = f;
+  document.querySelectorAll('.sb-item').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(el => {
+    if ((el.getAttribute('onclick')||'').includes(`'${f}'`)) el.classList.add('active');
+  });
+  renderList();
+}
+
+function renderList() {
+  let tickets = TICKETS;
+  if (currentFilter !== 'all') {
+    tickets = ['joiner','mover','leaver'].includes(currentFilter)
+      ? TICKETS.filter(t => t.type === currentFilter)
+      : TICKETS.filter(t => liveStatus[t.id] === currentFilter);
+  }
+  const label = currentFilter === 'all' ? 'All tickets' : currentFilter.charAt(0).toUpperCase() + currentFilter.slice(1) + 's';
+  document.getElementById('listTitle').textContent = label;
+  document.getElementById('listSub').textContent = `${tickets.length} ticket${tickets.length!==1?'s':''} · by date`;
+  const badgeCls = {new:'b-new',open:'b-open',pending:'b-pend',solved:'b-solved'};
+  document.getElementById('ticketList').innerHTML = tickets.map(t => {
+    const st = liveStatus[t.id];
+    const sla = slaStatus(t.slaDeadline, liveStatus[t.id]);
+    return `<div class="trow${t.id===currentTicketId?' sel':''}" onclick="openTicket('${t.id}')">
+      <div class="trow-icon" style="background:${t.color}">${t.initials}</div>
+      <div class="trow-body">
+        <div class="trow-subj">${t.subject}</div>
+        <div class="trow-sub">${t.subline}</div>
+        <div class="trow-foot">
+          <span class="badge ${badgeCls[st]||'b-new'}">${st.charAt(0).toUpperCase()+st.slice(1)}</span>
+          <span class="sla-chip ${sla.cls}">${sla.label}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Recalculate all sidebar counts from live status
+  const counts = {all:0, new:0, open:0, pending:0, solved:0, joiner:0, mover:0, leaver:0};
+  TICKETS.forEach(t => {
+    counts.all++;
+    counts[liveStatus[t.id]] = (counts[liveStatus[t.id]] || 0) + 1;
+    counts[t.type]++;
+  });
+  const countMap = {
+    'all': counts.all,
+    'new': counts.new,
+    'open': counts.open,
+    'pending': counts.pending,
+    'solved': counts.solved || 0,
+    'joiner': counts.joiner,
+    'mover': counts.mover,
+    'leaver': counts.leaver
+  };
+  document.querySelectorAll('.sb-item').forEach(el => {
+    const oc = el.getAttribute('onclick') || '';
+    const match = oc.match(/filterTickets\('(\w+)'\)/);
+    if (match) {
+      const key = match[1];
+      const countEl = el.querySelector('.sb-count');
+      if (countEl && countMap[key] !== undefined) {
+        countEl.textContent = countMap[key];
+      }
+    }
+  });
+}
+
+function openTicket(id) {
+  currentTicketId = id;
+  renderList();
+  const t = TICKETS.find(x => x.id === id);
+  const sla = slaStatus(t.slaDeadline, liveStatus[id]);
+  const st = liveStatus[id];
+  document.getElementById('mainId').textContent = '#' + t.id;
+  document.getElementById('mainTitle').textContent = t.subject;
+  document.getElementById('rp-id').textContent = '#' + t.id;
+  document.getElementById('rp-priority').textContent = t.priority;
+  document.getElementById('rp-created').textContent = t.created;
+  document.getElementById('rp-req').textContent = t.requester;
+  document.getElementById('rp-reqrole').textContent = t.reqRole;
+  document.getElementById('rp-sla').textContent = sla.label;
+  document.getElementById('rp-sla').style.color = st==='solved' ? '#68737d' : sla.cls==='sla-breach'?'#8b1a1a':sla.cls==='sla-warn'?'#ad5e00':'#186a3b';
+  document.getElementById('rp-slabar').style.width = st==='solved' ? '100%' : sla.pct + '%';
+  document.getElementById('rp-slabar').style.background = st==='solved' ? '#68737d' : sla.cls==='sla-breach'?'#e24b4a':sla.cls==='sla-warn'?'#EF9F27':'#186a3b';
+  document.getElementById('rp-approval').textContent = t.approvalRef + ' · ' + t.approvedBy;
+  const typeColors = {joiner:'b-new',mover:'b-open',leaver:'b-pend'};
+  const typeEl = document.getElementById('rp-type');
+  typeEl.textContent = t.type.charAt(0).toUpperCase()+t.type.slice(1);
+  typeEl.className = 'badge ' + (typeColors[t.type]||'b-new');
+  document.getElementById('rp-tags').innerHTML = t.tags.map(tg=>`<span class="tag">${tg}</span>`).join('');
+  const ex = document.getElementById('rp-extra');
+  ex.innerHTML = t.extra ? `<div class="rp-label">${t.extra.label}</div>` + t.extra.rows.map(([k,v])=>`<div class="rp-row"><div class="rp-key">${k}</div><div class="rp-val mono">${v}</div></div>`).join('') : '';
+  setStatusDisplay(liveStatus[id]);
+  renderThread(id);
+  document.getElementById('replyBox').value = '';
+  switchTab('reply');
+}
+
+function renderThread(id) {
+  const t = TICKETS.find(x => x.id === id);
+  const st = liveStatus[id];
+  const sla = slaStatus(t.slaDeadline, st);
+  let bannerCls, bannerMsg;
+  if (st === 'solved') {
+    bannerCls = 'ok';
+    bannerMsg = 'Ticket resolved — SLA closed. Audit trail preserved below.';
+  } else {
+    const deadline = new Date(t.slaDeadline).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    bannerCls = sla.cls==='sla-breach'?'breach':sla.cls==='sla-warn'?'warn':'ok';
+    bannerMsg = sla.cls==='sla-breach'
+      ? `SLA breached — action was required by ${deadline}. Resolve and document immediately.`
+      : sla.cls==='sla-warn'
+      ? `SLA warning — ${sla.label} remaining. Deadline: ${deadline}.`
+      : `SLA on track — ${sla.label} remaining. Deadline: ${deadline}.`;
+  }
+  const thread = document.getElementById('thread');
+  thread.innerHTML = `<div class="sla-banner ${bannerCls}">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    <span>${bannerMsg}</span></div>` + liveMessages[id].map(buildMessage).join('');
+  thread.scrollTop = thread.scrollHeight;
+}
+
+function buildMessage(m) {
+  const isInt = m.type === 'internal';
+  const isAppr = m.type === 'approval';
+  const cls = isAppr ? ' approval' : isInt ? ' internal' : '';
+  const badge = isAppr
+    ? `<span class="appr-badge">Approval confirmed</span>`
+    : isInt ? `<span class="int-badge">Internal note</span>` : '';
+  return `<div class="msg${cls}">
+    <div class="msg-head">
+      <div class="msg-av" style="background:${m.color};flex-shrink:0">${m.initials}</div>
+      <div style="flex:1;min-width:0">
+        <div class="msg-from">${m.from}${m.fromSub?` <span style="font-weight:400;color:var(--muted)">— ${m.fromSub}</span>`:''}${badge}</div>
+        <div class="msg-when">${m.time}</div>
+      </div>
+    </div>
+    <div class="msg-body">${m.html}</div>
+  </div>`;
+}
+
+let targetSubmitStatus = 'open';
+
+function toggleSubmitMenu(e) {
+  e.stopPropagation();
+  document.getElementById('submitMenu').classList.toggle('open');
+}
+
+function submitAs(status) {
+  targetSubmitStatus = status;
+  const labels = {open:'Submit as Open', pending:'Submit as Pending', solved:'Submit as Solved'};
+  document.getElementById('submitBtn').textContent = labels[status] || 'Submit as Open';
+  document.getElementById('submitMenu').classList.remove('open');
+}
+
+function submitMessage() {
+  const box = document.getElementById('replyBox');
+  const text = box.value.trim();
+  if (!text) return;
+  const now = new Date();
+  const timeStr = now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) + '  ' + now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+
+  liveMessages[currentTicketId].push({
+    type: currentTab==='note' ? 'internal' : 'reply',
+    from: 'Evan M.', fromSub: currentTab==='reply' ? 'IT / IAM' : '',
+    initials: 'EM', color: '#4b9ebf', time: timeStr,
+    html: `<p>${text.replace(/\n/g,'<br>')}</p>`
+  });
+
+  if (currentTab === 'reply') {
+    liveStatus[currentTicketId] = targetSubmitStatus;
+    setStatusDisplay(targetSubmitStatus);
+  }
+
+  renderList();
+  renderThread(currentTicketId);
+  box.value = '';
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  const box = document.getElementById('replyBox');
+  const submitBtn = document.getElementById('submitBtn');
+  const caretBtn = document.getElementById('caretBtn');
+  document.getElementById('tab-reply').classList.toggle('active', tab==='reply');
+  document.getElementById('tab-note').classList.toggle('active', tab==='note');
+  if (tab==='note') {
+    box.placeholder = 'Add an internal note (only visible to agents)…';
+    box.className = 'reply-box internal-mode';
+    submitBtn.textContent = 'Add note';
+    submitBtn.className = 'btn-submit internal-submit';
+    caretBtn.className = 'btn-caret internal-caret';
+  } else {
+    const t = TICKETS.find(x => x.id === currentTicketId);
+    box.placeholder = `Reply to ${t ? t.requester : 'requester'}…`;
+    box.className = 'reply-box';
+    const st = liveStatus[currentTicketId] || 'new';
+    const labels = {new:'Submit as Open', open:'Submit as Open', pending:'Submit as Pending', solved:'Submit as Solved'};
+    submitBtn.textContent = labels[st] || 'Submit as Open';
+    submitBtn.className = 'btn-submit';
+    caretBtn.className = 'btn-caret';
+  }
+}
+
+function toggleStatusMenu() { document.getElementById('statusMenu').classList.toggle('open'); }
+function setStatus(s) {
+  liveStatus[currentTicketId] = s;
+  setStatusDisplay(s);
+  document.getElementById('statusMenu').classList.remove('open');
+  // Update submit button label to reflect current status context
+  const submitBtn = document.getElementById('submitBtn');
+  if (currentTab === 'reply') {
+    const labels = {new:'Submit as Open', open:'Submit as Open', pending:'Submit as Pending', solved:'Submit as Solved'};
+    submitBtn.textContent = labels[s] || 'Submit as Open';
+  }
+  renderList();
+  // If current view filter no longer includes this ticket, stay on ticket but list will reflect reality
+}
+function setStatusDisplay(s) {
+  const map = {new:{cls:'chip-new',dot:'#186a3b',txt:'New'},open:{cls:'chip-open',dot:'#1f73b7',txt:'Open'},pending:{cls:'chip-pending',dot:'#ad5e00',txt:'Pending'},solved:{cls:'chip-solved',dot:'#68737d',txt:'Solved'}};
+  const v = map[s]||map.new;
+  document.getElementById('statusChip').className = `status-chip ${v.cls}`;
+  document.getElementById('statusDot').style.background = v.dot;
+  document.getElementById('statusLabel').textContent = v.txt;
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.status-chip') && !e.target.closest('#statusMenu')) document.getElementById('statusMenu').classList.remove('open');
+  if (!e.target.closest('.submit-wrap')) document.getElementById('submitMenu').classList.remove('open');
+});
+document.getElementById('replyBox').addEventListener('keydown', e => { if ((e.ctrlKey||e.metaKey)&&e.key==='Enter') submitMessage(); });
+setInterval(() => { renderList(); if(currentTicketId) renderThread(currentTicketId); }, 60000);
+renderList();
+openTicket('ITS-30101');
+</script>
+</body>
+</html>
