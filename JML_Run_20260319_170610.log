@@ -1,0 +1,34 @@
+[2026-03-19 17:06:10] [INFO] ==========================================================
+[2026-03-19 17:06:10] [INFO] JML AUTOMATION — MASTER PROVISIONING SCRIPT
+[2026-03-19 17:06:10] [INFO] Run ID   : 20260319_170610
+[2026-03-19 17:06:10] [INFO] Type     : Leaver
+[2026-03-19 17:06:10] [INFO] CSV      : C:\JML-Lab\CSV\Leavers.csv
+[2026-03-19 17:06:10] [INFO] Rows     : 2
+[2026-03-19 17:06:10] [INFO] Log file : C:\JML-Lab\Logs\JML_Run_20260319_170610.log
+[2026-03-19 17:06:10] [INFO] ==========================================================
+[2026-03-19 17:06:10] [INFO] ----------------------------------------------------------
+[2026-03-19 17:06:10] [INFO] LEAVER: James King | ITS-30105 | Termination
+[2026-03-19 17:06:10] [INFO] ----------------------------------------------------------
+[2026-03-19 17:06:10] [SUCCESS] [ITS-30105] AD account disabled: 'James.King'
+[2026-03-19 17:06:11] [SUCCESS] [ITS-30105] Moved 'James.King' to OU=DisabledUsers,OU=_NA,DC=yearwood,DC=local
+[2026-03-19 17:06:11] [SUCCESS] [ITS-30105] Removed from group: V2_Finance
+[2026-03-19 17:06:11] [INFO] [ITS-30105] Mailbox retention: 90 days (Termination)
+[2026-03-19 17:06:11] [SUCCESS] [ITS-30105] Leaver complete. Okta will sync on next AD agent poll.
+[2026-03-19 17:06:11] [INFO] [ITS-30105] To sync now: Okta Admin -> Directory -> Directory Integrations -> Import Now
+[2026-03-19 17:06:11] [INFO] ----------------------------------------------------------
+[2026-03-19 17:06:11] [INFO] LEAVER: Mike Brown | ITS-30106 | Resignation
+[2026-03-19 17:06:11] [INFO] ----------------------------------------------------------
+[2026-03-19 17:06:11] [SUCCESS] [ITS-30106] AD account disabled: 'Mike.Brown'
+[2026-03-19 17:06:11] [SUCCESS] [ITS-30106] Moved 'Mike.Brown' to OU=DisabledUsers,OU=_NA,DC=yearwood,DC=local
+[2026-03-19 17:06:11] [SUCCESS] [ITS-30106] Removed from group: V2_Cloud_Engineer
+[2026-03-19 17:06:11] [INFO] [ITS-30106] Mailbox retention: 60 days (Resignation)
+[2026-03-19 17:06:11] [SUCCESS] [ITS-30106] Leaver complete. Okta will sync on next AD agent poll.
+[2026-03-19 17:06:11] [INFO] [ITS-30106] To sync now: Okta Admin -> Directory -> Directory Integrations -> Import Now
+[2026-03-19 17:06:11] [INFO] ==========================================================
+[2026-03-19 17:06:11] [INFO] RUN SUMMARY
+[2026-03-19 17:06:11] [INFO] Type      : Leaver
+[2026-03-19 17:06:11] [INFO] Total rows: 2
+[2026-03-19 17:06:11] [INFO] Succeeded : 2 — ITS-30105, ITS-30106
+[2026-03-19 17:06:11] [INFO] Failed    : 0 — 
+[2026-03-19 17:06:11] [INFO] Log file  : C:\JML-Lab\Logs\JML_Run_20260319_170610.log
+[2026-03-19 17:06:11] [INFO] ==========================================================

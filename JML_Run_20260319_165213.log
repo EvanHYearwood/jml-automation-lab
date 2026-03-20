@@ -1,0 +1,30 @@
+[2026-03-19 16:52:13] [INFO] ==========================================================
+[2026-03-19 16:52:13] [INFO] JML AUTOMATION — MASTER PROVISIONING SCRIPT
+[2026-03-19 16:52:13] [INFO] Run ID   : 20260319_165213
+[2026-03-19 16:52:13] [INFO] Type     : Joiner
+[2026-03-19 16:52:13] [INFO] CSV      : C:\JML-Lab\CSV\Joiners.csv
+[2026-03-19 16:52:13] [INFO] Rows     : 2
+[2026-03-19 16:52:13] [INFO] Log file : C:\JML-Lab\Logs\JML_Run_20260319_165213.log
+[2026-03-19 16:52:13] [INFO] ==========================================================
+[2026-03-19 16:52:13] [INFO] ----------------------------------------------------------
+[2026-03-19 16:52:13] [INFO] JOINER: Jordan Mills | ITS-30101
+[2026-03-19 16:52:13] [INFO] ----------------------------------------------------------
+[2026-03-19 16:52:14] [WARN] [ITS-30101] AD account 'Jordan.Mills' already exists — skipping creation.
+[2026-03-19 16:52:14] [SUCCESS] [ITS-30101] Added 'Jordan.Mills' to 'V2_Cloud_Engineer'
+[2026-03-19 16:52:14] [SUCCESS] [ITS-30101] Joiner complete. Okta will sync on next AD agent poll.
+[2026-03-19 16:52:14] [INFO] [ITS-30101] To sync now: Okta Admin -> Directory -> Directory Integrations -> Import Now
+[2026-03-19 16:52:14] [INFO] ----------------------------------------------------------
+[2026-03-19 16:52:14] [INFO] JOINER: Priya Nair | ITS-30102
+[2026-03-19 16:52:14] [INFO] ----------------------------------------------------------
+[2026-03-19 16:52:14] [SUCCESS] [ITS-30102] AD account created: Priya.Nair@yearwood.local
+[2026-03-19 16:52:14] [SUCCESS] [ITS-30102] Added 'Priya.Nair' to 'V2_HR'
+[2026-03-19 16:52:14] [SUCCESS] [ITS-30102] Joiner complete. Okta will sync on next AD agent poll.
+[2026-03-19 16:52:14] [INFO] [ITS-30102] To sync now: Okta Admin -> Directory -> Directory Integrations -> Import Now
+[2026-03-19 16:52:14] [INFO] ==========================================================
+[2026-03-19 16:52:14] [INFO] RUN SUMMARY
+[2026-03-19 16:52:14] [INFO] Type      : Joiner
+[2026-03-19 16:52:14] [INFO] Total rows: 2
+[2026-03-19 16:52:14] [INFO] Succeeded : 2 — ITS-30101, ITS-30102
+[2026-03-19 16:52:14] [INFO] Failed    : 0 — 
+[2026-03-19 16:52:14] [INFO] Log file  : C:\JML-Lab\Logs\JML_Run_20260319_165213.log
+[2026-03-19 16:52:14] [INFO] ==========================================================

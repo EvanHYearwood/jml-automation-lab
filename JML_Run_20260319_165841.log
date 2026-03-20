@@ -1,0 +1,32 @@
+[2026-03-19 16:58:41] [INFO] ==========================================================
+[2026-03-19 16:58:41] [INFO] JML AUTOMATION — MASTER PROVISIONING SCRIPT
+[2026-03-19 16:58:41] [INFO] Run ID   : 20260319_165841
+[2026-03-19 16:58:41] [INFO] Type     : Mover
+[2026-03-19 16:58:41] [INFO] CSV      : C:\JML-Lab\CSV\Movers.csv
+[2026-03-19 16:58:41] [INFO] Rows     : 2
+[2026-03-19 16:58:41] [INFO] Log file : C:\JML-Lab\Logs\JML_Run_20260319_165841.log
+[2026-03-19 16:58:41] [INFO] ==========================================================
+[2026-03-19 16:58:41] [INFO] ----------------------------------------------------------
+[2026-03-19 16:58:41] [INFO] MOVER: Emily Clark | ITS-30103
+[2026-03-19 16:58:41] [INFO] ----------------------------------------------------------
+[2026-03-19 16:58:41] [SUCCESS] [ITS-30103] Removed 'Emily.Clark' from 'V2_Helpdesk'
+[2026-03-19 16:58:41] [SUCCESS] [ITS-30103] Added 'Emily.Clark' to 'V2_Cloud_Engineer'
+[2026-03-19 16:58:41] [SUCCESS] [ITS-30103] Updated title: 'Cloud Engineer I' | dept: 'Cloud Engineering'
+[2026-03-19 16:58:41] [SUCCESS] [ITS-30103] Mover complete. Okta will sync on next AD agent poll.
+[2026-03-19 16:58:41] [INFO] [ITS-30103] To sync now: Okta Admin -> Directory -> Directory Integrations -> Import Now
+[2026-03-19 16:58:41] [INFO] ----------------------------------------------------------
+[2026-03-19 16:58:42] [INFO] MOVER: David Lee | ITS-30104
+[2026-03-19 16:58:42] [INFO] ----------------------------------------------------------
+[2026-03-19 16:58:42] [SUCCESS] [ITS-30104] Removed 'David.Lee' from 'V2_Finance'
+[2026-03-19 16:58:42] [SUCCESS] [ITS-30104] Added 'David.Lee' to 'V2_Helpdesk'
+[2026-03-19 16:58:42] [SUCCESS] [ITS-30104] Updated title: 'Helpdesk Analyst' | dept: 'Helpdesk'
+[2026-03-19 16:58:42] [SUCCESS] [ITS-30104] Mover complete. Okta will sync on next AD agent poll.
+[2026-03-19 16:58:42] [INFO] [ITS-30104] To sync now: Okta Admin -> Directory -> Directory Integrations -> Import Now
+[2026-03-19 16:58:42] [INFO] ==========================================================
+[2026-03-19 16:58:42] [INFO] RUN SUMMARY
+[2026-03-19 16:58:42] [INFO] Type      : Mover
+[2026-03-19 16:58:42] [INFO] Total rows: 2
+[2026-03-19 16:58:42] [INFO] Succeeded : 2 — ITS-30103, ITS-30104
+[2026-03-19 16:58:42] [INFO] Failed    : 0 — 
+[2026-03-19 16:58:42] [INFO] Log file  : C:\JML-Lab\Logs\JML_Run_20260319_165841.log
+[2026-03-19 16:58:42] [INFO] ==========================================================
