@@ -1,0 +1,3 @@
+TicketId,ApprovalRef,FullName,SamAccount,UPN,RemoveGroup,AddGroup,NewTitle,NewDepartment
+ITS-30103,APPR-2026-4003,Emily Clark,Emily.Clark,Emily.Clark@yearwood.local,V2_Helpdesk,V2_Cloud_Engineer,Cloud Engineer I,Cloud Engineering
+ITS-30104,APPR-2026-4004,David Lee,David.Lee,David.Lee@yearwood.local,V2_Finance,V2_Helpdesk,Helpdesk Analyst,Helpdesk

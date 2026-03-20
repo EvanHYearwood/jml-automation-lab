@@ -1,0 +1,3 @@
+TicketId,ApprovalRef,FullName,FirstName,LastName,SamAccount,UPN,OU,ADGroup,Title,Department,EmployeeId,StartDate,PersonalEmail
+ITS-30101,APPR-2026-4001,Jordan Mills,Jordan,Mills,Jordan.Mills,Jordan.Mills@yearwood.local,"OU=Users,OU=_NA,DC=yearwood,DC=local",V2_Cloud_Engineer,Cloud Engineer I,Cloud Engineering,EMP-2026-0501,2026-03-23,j.mills.2026@personal.com
+ITS-30102,APPR-2026-4002,Priya Nair,Priya,Nair,Priya.Nair,Priya.Nair@yearwood.local,"OU=Users,OU=_NA,DC=yearwood,DC=local",V2_HR,HR Coordinator,Human Resources,EMP-2026-0502,2026-03-24,p.nair.2026@personal.com

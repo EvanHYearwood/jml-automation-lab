@@ -1,0 +1,3 @@
+TicketId,ApprovalRef,FullName,SamAccount,UPN,TerminationType,MailboxRetentionDays
+ITS-30105,APPR-2026-4005,James King,James.King,James.King@yearwood.local,Termination,90
+ITS-30106,APPR-2026-4006,Mike Brown,Mike.Brown,Mike.Brown@yearwood.local,Resignation,60
