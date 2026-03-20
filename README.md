@@ -3,6 +3,9 @@
 
 A hands-on IAM lab automating the full Joiner-Mover-Leaver identity lifecycle across a hybrid Active Directory and Okta environment. Built across three sessions — from certificate-based API authentication through to CSV-driven provisioning, offboarding, and ticket closure simulation.
 
+<h2>Video Demonstration</h2>
+
+- ### [Watch me do a Live Lab Walkthrough 🚀](https://youtu.be/q4NHyQzf0Uk)
 ---
 
 ## Table of Contents
