@@ -170,7 +170,8 @@ The function:
 Phase 0 PASSED
 ```
 
-> **[Insert here]** — PowerShell terminal showing Test-OktaAuth-v2.ps1 passing all four checks
+> **[<img width="1914" height="839" alt="image" src="https://github.com/user-attachments/assets/5eaf48ac-6181-43fd-9072-fe7aa145ea8e" />
+<img width="1923" height="980" alt="image" src="https://github.com/user-attachments/assets/c7af66e9-735a-4e21-811b-2143b1e24941" />** — PowerShell terminal showing Test-OktaAuth-v2.ps1 passing all four checks
 
 ---
 
@@ -178,7 +179,7 @@ Phase 0 PASSED
 
 **Ticket:** ITS-30101 — Jordan Mills, Cloud Engineer I, starting March 23 2026
 
-> **[Insert here]** — ITS-30101 ticket detail showing HR email, auto-triage note, and manager approval confirmation
+> **[<img width="1679" height="939" alt="image" src="https://github.com/user-attachments/assets/ce71eca4-88db-4770-9f0e-1e58f89e80ba" />]** — ITS-30101 ticket detail showing HR email, auto-triage note, and manager approval confirmation
 
 ### What the script does
 
@@ -228,9 +229,9 @@ The account must exist before group assignment. The group assignment must be com
 > Get-ADUser -Filter { SamAccountName -eq $sam }
 > ```
 
-> **[Insert here]** — AD Users and Computers showing Jordan Mills in `OU=Users,OU=_NA`
+> **[<img width="1106" height="694" alt="image" src="https://github.com/user-attachments/assets/d23a5eff-e75e-4c34-b34e-2bc47185974d" />]** — AD Users and Computers showing Jordan Mills in `OU=Users,OU=_NA`
 
-> **[Insert here]** — V2_Cloud_Engineer Members tab showing Jordan Mills
+> **[<img width="458" height="266" alt="image" src="https://github.com/user-attachments/assets/eb31578e-a82e-449f-81cb-e9a32ac60d06" />]** — V2_Cloud_Engineer Members tab showing Jordan Mills
 
 ### Okta sync
 
@@ -238,9 +239,7 @@ The account must exist before group assignment. The group assignment must be com
 >
 > **To sync immediately:** Okta Admin → Directory → Directory Integrations → yearwood.local → Import Now
 
-> **[Insert here]** — Okta user profile for Jordan Mills post-sync showing AD-sourced attributes
-
-> **[Insert here]** — Okta V2_Cloud_Engineer group showing synced members
+> **[<img width="1595" height="868" alt="image" src="https://github.com/user-attachments/assets/a6a76bcd-7c6b-4fce-963e-b4e03bf954e5" />]** — Okta V2_Cloud_Engineer group showing synced members
 
 ---
 
@@ -254,9 +253,9 @@ After provisioning, the verification script queries AD and Okta to confirm the a
 - Group membership matches ticket
 - Okta user profile attributes match AD
 
-**Output:** Timestamped CSV in `C:\JML-Lab\Logs\` capturing post-provisioning account state. This becomes the audit trail attached to the ticket on closure.
+**Output:** Timestamped Log in `C:\JML-Lab\Logs\` capturing post-provisioning account state. This becomes the audit trail attached to the ticket on closure.
 
-> **[Insert here]** — CSV proof export showing account state, group membership, and timestamp columns
+> **[<img width="1159" height="689" alt="image" src="https://github.com/user-attachments/assets/1136c78c-4e07-49a5-97e2-c24cfd6d2d79" />]** — log proof export showing account state, group membership, and timestamp columns
 
 ---
 
@@ -264,7 +263,7 @@ After provisioning, the verification script queries AD and Okta to confirm the a
 
 **Ticket:** ITS-30103 — Emily Clark, Helpdesk → Cloud Engineer
 
-> **[Insert here]** — ITS-30103 ticket detail showing group delta and approval confirmation
+> **[<img width="1684" height="831" alt="image" src="https://github.com/user-attachments/assets/05d70d94-53c3-4a19-8fbc-69798d457df5" />]** — ITS-30103 ticket detail showing group delta and approval confirmation
 
 ### What the script does
 
@@ -293,7 +292,7 @@ Emily was in `V2_Helpdesk` — SharePoint + Slack. Moving to `V2_Cloud_Engineer`
 >
 > Unlike `New-ADUser` which sets all attributes at creation, `Set-ADUser` only changes the fields passed in. Emily's password, UPN, OU placement, and every other attribute stay exactly as they were — only title and department are updated.
 
-> **[Insert here]** — V2_Cloud_Engineer Members tab showing Emily Clark after the move
+> **[<img width="953" height="592" alt="image" src="https://github.com/user-attachments/assets/07b78349-07bd-4360-b347-b58e1b515bc9" />]** — V2_Cloud_Engineer Members tab showing Emily Clark after the move
 
 ---
 
@@ -303,7 +302,7 @@ Emily was in `V2_Helpdesk` — SharePoint + Slack. Moving to `V2_Cloud_Engineer`
 
 The Leaver workflow is the most security-critical phase. A terminated employee with active access is an immediate risk. The script executes three stages — and Stage 3 (group removal) runs independently of Stage 2, so group access is never blocked by a failed OU move.
 
-> **[Insert here]** — ITS-30105 ticket detail showing Critical SLA, dual authorization (HR Director + Legal), and URGENT triage note
+> **[<img width="1699" height="721" alt="image" src="https://github.com/user-attachments/assets/0735379b-617a-4854-b597-2f59ab2f85d6" />]** — ITS-30105 ticket detail showing Critical SLA, dual authorization (HR Director + Legal), and URGENT triage note
 
 ### What the script does
 
@@ -325,9 +324,9 @@ foreach ($group in $adUser.MemberOf) {
 
 Stage 3 runs even if Stage 2 fails. An account in the wrong OU with no group memberships is safe. An account in the right OU but still a member of `V2_Finance` is a risk. Group revocation is never made dependent on the OU move succeeding.
 
-> **[Insert here]** — AD DisabledUsers OU showing James King post-offboarding
+> **[<img width="709" height="406" alt="image" src="https://github.com/user-attachments/assets/d52d2962-b2aa-43e4-a946-e5262613d719" />]** — AD DisabledUsers OU showing James King post-offboarding
 
-> **[Insert here]** — Okta showing James King deactivated post-sync
+> **[<img width="1596" height="734" alt="image" src="https://github.com/user-attachments/assets/7d2f45ee-e613-467b-b8f4-932a5504fa68" />]** — Okta showing James King deactivated post-sync
 
 ---
 
@@ -345,7 +344,7 @@ The Zendesk mock (`/mock/zendesk-jml-v3.html`) is a standalone HTML file simulat
 - Submit as Open / Pending / Solved via split-button dropdown
 - SLA banner transitions to Resolved state when a ticket is solved
 
-> **[Insert here]** — Zendesk mock with a ticket marked Solved and SLA showing Resolved
+> **[<img width="548" height="629" alt="image" src="https://github.com/user-attachments/assets/cd46c75a-9a98-48d9-bbfa-f2fa59fa63a8" />]** — Zendesk mock with a ticket marked Solved and SLA showing Resolved
 
 ---
 
@@ -413,7 +412,7 @@ Every error follows a three-part format:
   Impact  : All stages skipped for this row. No changes were made.
 ```
 
-> **[Insert here]** — PowerShell terminal showing master script output with per-row logging and summary report
+> **[<img width="2017" height="1236" alt="image" src="https://github.com/user-attachments/assets/90ace1ed-c9a8-46f4-be43-f0a59fd7fabb" />]** — PowerShell terminal showing master script output with per-row logging and summary report
 
 ---
 
