@@ -1,7 +1,9 @@
 # Automated JML W/ Cert-Based Authentication (JWT)
 **Yearwood.Local | Active Directory + Okta | PowerShell**
 
-A hands-on IAM lab automating the full Joiner-Mover-Leaver identity lifecycle across a hybrid Active Directory and Okta environment. Built across three sessions — from certificate-based API authentication through to CSV-driven provisioning, offboarding, and ticket closure simulation.
+Hi,
+
+Here is another hands-on IAM lab where I automate the full Joiner-Mover-Leaver identity lifecycle across a hybrid Active Directory and Okta environment. It includes certificate-based API authentication and CSV-driven provisioning, offboarding, and ticket closure simulation.
 
 <h2>Video Demonstration</h2>
 
@@ -12,16 +14,16 @@ A hands-on IAM lab automating the full Joiner-Mover-Leaver identity lifecycle ac
 1. [Lab Overview](#lab-overview)
 2. [Environment](#environment)
 3. [Architecture](#architecture)
-4. [Phase 0 — Certificate-Based Okta Authentication](#phase-0--certificate-based-okta-authentication)
-5. [Phase 1 — Joiner Provisioning](#phase-1--joiner-provisioning)
-6. [Phase 2 — Post-Provisioning Verification](#phase-2--post-provisioning-verification)
-7. [Phase 3 — Mover Provisioning](#phase-3--mover-provisioning)
-8. [Phase 4 — Leaver Offboarding](#phase-4--leaver-offboarding)
-9. [Phase 5 — Ticket Closure Simulation](#phase-5--ticket-closure-simulation)
-10. [CSV-Driven Architecture Upgrade](#csv-driven-architecture-upgrade)
-11. [Key Lessons Learned](#key-lessons-learned)
-12. [Script Inventory](#script-inventory)
-13. [What I'd Do Differently in Production](#what-id-do-differently-in-production)
+    - [Phase 0 — Certificate-Based Okta Authentication](#phase-0--certificate-based-okta-authentication)
+    - [Phase 1 — Joiner Provisioning](#phase-1--joiner-provisioning)
+    - [Phase 2 — Post-Provisioning Verification](#phase-2--post-provisioning-verification)
+    - [Phase 3 — Mover Provisioning](#phase-3--mover-provisioning)
+    - [Phase 4 — Leaver Offboarding](#phase-4--leaver-offboarding)
+    - [Phase 5 — Ticket Closure Simulation](#phase-5--ticket-closure-simulation)
+4. [CSV-Driven Architecture Upgrade](#csv-driven-architecture-upgrade)
+5. [Key Lessons Learned](#key-lessons-learned)
+6. [Script Inventory](#script-inventory)
+7. [What I'd Do Differently in Production](#what-id-do-differently-in-production)
 
 ---
 
